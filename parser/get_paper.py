@@ -1,3 +1,4 @@
+# coding: utf8
 from BeautifulSoup import BeautifulSoup
 import sys
 import os
@@ -17,7 +18,7 @@ for i in range(int(sys.argv[2]),int(sys.argv[3])+1,1):
 		output_file = open(filename[:-5]+".txt",'w')
 
 		soup = BeautifulSoup(input_file)
-		output_file.write(str(soup.title.string)+'\n')
+		output_file.write(str(soup.title.string)+"\r\n")
 		body = soup.body
 		tables = body.findAll("table")
 		flag = 0
@@ -27,7 +28,10 @@ for i in range(int(sys.argv[2]),int(sys.argv[3])+1,1):
 					if 'NoneType' not in str(type(td.pre)) and flag == 0:
 						for tr_out in table.findAll("tr"):
 							if 'NoneType' not in str(type(tr_out.td.span)):
-								output_file.write(str(tr_out.td.span.string))
+								info = str(tr_out.td.span.string).decode("utf8")
+								info = info.replace("&nbsp;","")
+								if u"筆 / 現在第" not in info:
+									output_file.write(info.encode("utf8")+"\r\n")
 						paper = str(td.pre.string)
 						output_file.write(paper)
 						flag = 1
