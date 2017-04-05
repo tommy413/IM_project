@@ -32,7 +32,7 @@ for i in range(int(sys.argv[2]),int(sys.argv[3])+1,1):
 								info = info.replace("&nbsp;","")
 								if u"筆 / 現在第" not in info:
 									output_file.write(info.encode("utf8")+"\r\n")
-						paper = str(td.pre.string)
+						paper = str(td.pre.string).replace('	','').replace(' ','').replace('\n','').replace(' ','').replace('\t','').replace('　','')
 						output_file.write(paper)
 						flag = 1
 		input_file.close()
