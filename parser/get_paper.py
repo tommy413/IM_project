@@ -32,6 +32,8 @@ for i in range(int(sys.argv[2]),int(sys.argv[3])+1,1):
 								info = info.replace("&nbsp;","").replace("None","")
 								if u"筆 / 現在第" not in info:
 									output_file.write(info.encode("utf8")+"\r\n")
+							if "裁判全文" in info.encode("utf8"):
+								break
 						paper = str(td.pre.string).replace('	','').replace(' ','').replace('\n','').replace(' ','').replace('\t','').replace('　','').replace('\r','')
 						output_file.write(paper)
 						flag = 1
