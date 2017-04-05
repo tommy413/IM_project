@@ -27,9 +27,6 @@ for i in range(int(sys.argv[2]),int(sys.argv[3])+1,1):
 				for td in tr.findAll("td"):
 					if 'NoneType' not in str(type(td.pre)) and flag == 0:
 						for tr_out in table.findAll("tr"):
-							# print str(tr_out.td)
-							# if "<pre>" in str(tr_out.td):
-							# 	break
 							if 'NoneType' not in str(type(tr_out.td.span)):
 								info = str(tr_out.td.span.string).decode("utf8")
 								info = info.replace("&nbsp;","").replace("None","")
