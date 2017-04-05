@@ -1,0 +1,35 @@
+from BeautifulSoup import BeautifulSoup
+import sys
+import os
+
+# argv : courtName startDate endDate
+
+crawl_path = "../crawler/" 
+path = sys.argv[1] + "/"
+for i in range(int(sys.argv[2]),int(sys.argv[3])+1,1):
+	foldername = str(i)[:4] + "-" + str(i)[4:6] + "-" + str(i)[6:]
+	fileList = os.listdir(crawl_path+path+foldername)
+	if not os.path.exists(path+foldername) :
+		os.makedirs(path+foldername)
+	for f in fileList:
+		filename = path+foldername+"/"+f
+		input_file = open(crawl_path+filename,'r')
+		output_file = open(filename[:-5]+".txt",'w')
+
+		soup = BeautifulSoup(input_file)
+		output_file.write(str(soup.title.string)+'\n')
+		body = soup.body
+		tables = body.findAll("table")
+		flag = 0
+		for table in tables:
+			for tr in table.findAll("tr"):
+				for td in tr.findAll("td"):
+					if 'NoneType' not in str(type(td.pre)) and flag == 0:
+						for tr_out in table.findAll("tr"):
+							if 'NoneType' not in str(type(tr_out.td.span)):
+								output_file.write(str(tr_out.td.span.string))
+						paper = str(td.pre.string)
+						output_file.write(paper)
+						flag = 1
+		input_file.close()
+		output_file.close()
