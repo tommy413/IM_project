@@ -4,8 +4,10 @@ parserList = os.listdir('.')
 parserList.remove('get_paper.py')
 parserList.remove('line.py')
 parserList.remove('main.py')
+parserList.remove('reason.py')
 #forMAC
 parserList.remove('.DS_Store')
+
 
 for f in parserList:
     courtList = os.listdir(f)
@@ -13,7 +15,6 @@ for f in parserList:
     courtList.remove('.DS_Store')
     for g in courtList:
         path = f+'/'+g
-
         files = os.listdir(path)
         #forMAC
         files.remove('.DS_Store')
