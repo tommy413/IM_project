@@ -5,7 +5,7 @@ import os
 
 # argv : courtName startDate endDate
 
-crawl_path = "../crawler/" 
+crawl_path = "../crawler/downloaded/" 
 path = sys.argv[1] + "/"
 for i in range(int(sys.argv[2]),int(sys.argv[3])+1,1):
 	foldername = str(i)[:4] + "-" + str(i)[4:6] + "-" + str(i)[6:]
@@ -13,6 +13,8 @@ for i in range(int(sys.argv[2]),int(sys.argv[3])+1,1):
 	if not os.path.exists(path+foldername) :
 		os.makedirs(path+foldername)
 	for f in fileList:
+		if "-h" in f:
+			continue
 		filename = path+foldername+"/"+f
 		input_file = open(crawl_path+filename,'r')
 		output_file = open(filename[:-5]+".txt",'w')

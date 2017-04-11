@@ -1,0 +1,116 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<HTML>
+	<HEAD>
+		<title>歷審案件查詢</title>
+		<meta content="Microsoft Visual Studio .NET 7.1" name="GENERATOR">
+		<meta content="C#" name="CODE_LANGUAGE">
+		<meta content="JavaScript" name="vs_defaultClientScript">
+		<meta content="http://schemas.microsoft.com/intellisense/ie5" name="vs_targetSchema">
+		<STYLE type="text/css">@import url( Images_4/css.css ); 
+		</STYLE>
+		<SCRIPT language="JavaScript">
+<!--
+	function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+function openwinok(arguments,width,height){ 
+	
+	
+    var str = "FJUDQRY02_1.aspx?cw=1&" + arguments;
+    //newWindow = top.open("","","maximize=no;toolbar=no,directories=no,status=yes,scrollbars=yes,hscrollbars=no,resize=no,menubar=no");
+
+    if(width==null && height==null){
+        width = screen.width;
+        height = screen.availHeight;  
+    }
+    try{
+	var newWindow = window.open(str,"","height=" + height + ",width=" + width + ",maximize=no;toolbar=no,directories=no,status=yes,scrollbars=yes,hscrollbars=no,resize=no,menubar=no");
+	newWindow.moveTo((screen.width-width)/2, (screen.availHeight-height)/2);
+	}catch(e){}
+}
+
+function goTyped(court,crmyy,crmid,crmno,owner,courtname){
+	if (owner=='H'){
+		owner='M'
+	}
+	openwinok('courtFullName=' + court + owner + '&v_court=' + court + ' ' + courtname + '&v_sys=' + owner + '&jud_year=' + crmyy + '&jud_case=' + crmid + '&jud_no=' + crmno + '&jud_title=&keyword=&sdate=19110101&edate=99991231&searchkw=',1024,688);
+	
+}
+//-->
+		</SCRIPT>
+	</HEAD>
+	<BODY text="#000000" bgColor="#ffffff" background="Images_4/background.gif" onload="MM_preloadImages('Images_4/02.gif','Images_4/whd04.gif','Images_4/view02.gif');"
+		MS_POSITIONING="GridLayout">
+		<form name="Form1" method="post" action="HISTORYSELF.aspx?SwitchFrom=1&amp;selectedOwner=H&amp;selectedCrmyy=106&amp;selectedCrmid=%e8%81%b2&amp;selectedCrmno=000425&amp;selectedCrtid=TPD" id="Form1">
+<input type="hidden" name="__VIEWSTATE" value="dDwxMjIzMTU1Mzg1Ozs+pyTMg7x4rAnYyFCzLpc3y+S/pk8=" />
+
+			
+			<table cellPadding="0" width="900" align="center" border="0" cellSpacing="0">
+				<TBODY>
+					<TR>
+						<TD colSpan="3">
+							<DIV align="center"><IMG height="58" src="Images_4/logo11.gif" width="400"></DIV>
+						</TD>
+					</TR>
+					<TR>
+						<TD width="11" height="9"><IMG height="11" src="Images_4/C1.gif" width="11"></TD>
+						<TD width="565" bgColor="#ffffff" height="9"><IMG height="1" src="Images_4/line.gif" width="1"></TD>
+						<TD width="12" height="9"><IMG height="11" src="Images_4/C2.gif" width="11"></TD>
+					</TR>
+					<TR>
+						<TD width="11" bgColor="#ffffff">&nbsp;</TD>
+						<TD width="565">
+							<TABLE borderColor="#ffc250" cellSpacing="0" cellPadding="0" width="873" border="3">
+								<TBODY>
+									<TR>
+										<TD align="left" colSpan="3" height="11">&nbsp;1&nbsp;/&nbsp;1&nbsp;頁次</TD>										
+										<TD align="right" colSpan="2" height="11"><INPUT onclick="javascript:window.parent.close();" type="button" value="離  開">
+											<!--<input type="button" value="回查詢畫面" onclick="javascript:history.go(-1);">//--></TD>
+									</TR>
+									
+								</TBODY>
+							</TABLE>
+						</TD>
+						<TD width="12" bgColor="#ffffff">&nbsp;</TD>
+					</TR>
+					
+					<TR>
+						<TD width="11" height="11"><IMG height="11" src="Images_4/C3.gif" width="11"></TD>
+						<TD width="565" bgColor="#ffffff"><IMG height="1" src="Images_4/line.gif" width="1"></TD>
+						<TD width="12"><IMG height="11" src="Images_4/C4.gif" width="11"></TD>
+					</TR>
+					<TR>
+						<TD align="center" colSpan="3">&nbsp;</TD>
+					</TR>
+					<TR>
+						<TD colSpan="3">&nbsp;</TD>
+					</TR>
+				</TBODY>
+			</table>
+			<BR>
+			<TABLE width="580" align="center" border="0">
+				<TBODY>
+					<TR>
+						<TD vAlign="top" height="45"><IMG height="35" src="Images_4/04.gif" width="80"></TD>
+					</TR>
+					<TR>
+						<TD height="30"><FONT color="#ff0000">．本資料於判決正本交付送達當事人後(約宣判後十五日)提供查詢</FONT></TD>
+					</TR>
+					<TR>
+						<TD height="30"><FONT color="#ff0000">．</FONT>本資料僅供參考，如與判決原本不符，以判決原本為準。</TD>
+					</TR>
+					<TR>
+						<TD height="30"><FONT color="#ff0000">．</FONT>如符合上述條件仍查不到，請將案號或問題告訴<A href="http://www.judicial.gov.tw/email/write.htm">我們</A>。</TD>
+					</TR>
+					<TR>
+						<TD height="30"><FONT color="#ff0000">．紅色字體代表此案有上訴至最高法院，目前審理中。</FONT></TD>
+					</TR>
+				</TBODY>
+			</TABLE>
+			</form>
+	</BODY>
+</HTML>
