@@ -77,7 +77,3 @@ for f in parserList:
                 print (judgeList)
             else:
                 print (judgeList)
-
-
-
-#            print (match)
