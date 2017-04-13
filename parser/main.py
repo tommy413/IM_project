@@ -5,7 +5,9 @@ parserList.remove('get_paper.py')
 parserList.remove('line.py')
 parserList.remove('main.py')
 parserList.remove('reason_judge.py')
+
 parserList.remove('accu_defe.py')
+
 
 #forMAC
 parserList.remove('.DS_Store')
