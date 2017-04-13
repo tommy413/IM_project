@@ -3,8 +3,6 @@ from BeautifulSoup import BeautifulSoup
 import sys
 import os
 
-# argv : courtName startDate endDate
-
 crawl_path = "../crawler/downloaded/" 
 path = sys.argv[1] + "/"
 for i in range(int(sys.argv[2]),int(sys.argv[3])+1,1):
