@@ -7,6 +7,8 @@ parserList.remove('line.py')
 parserList.remove('main.py')
 parserList.remove('reason_judge.py')
 parserList.remove('accu_defe.py')
+parserList.remove('all.py')
+parserList.remove('get_paper_from_db.py')
 
 #forMAC
 parserList.remove('.DS_Store')
@@ -31,6 +33,13 @@ for f in parserList:
             accuser = ''
             defendant = ''
             advocate = ''
+            helper = ''
+            agent = ''
+            accuserList = []
+            defendantList = []
+            advocateList = []
+            helperList = []
+            agentList = []
             accuser_pat = '公訴人|聲請人|原告'
             accuser_match = re.findall(accuser_pat,content)
             defendant_pat = '被告人|受刑人|被告|具保人|上訴人|自訴人'
@@ -78,13 +87,26 @@ for f in parserList:
                     agent = accuser[agentEnd:]
                     accuser = accuser[:agentBeg]
 
+            accuserList = accuser.split('\n')
+            helperList = helper.split('\n')
+            defendantList = defendant.split('\n')
+            agentList = agent.split('\n')
+            advocateList = advocate.split('\n')
+
+            # print (len(accuserList), accuserList[len(accuserList)-2])
+            accuserList = accuserList.remove('')
+            helperList = helperList.remove('')
+            defendantList = defendantList.remove('')
+            agentList = agentList.remove('')
+            advocateList = advocateList.remove('')
+
             if len(accuser_match) != 0:
-                print (accuser_match[0] + ": " + accuser)
+                print (accuser_match[0] + ": ", accuserList)
                 if len(agent_match) != 0:
-                    print (accuser_match[0] + agent_match[0] + ": " + agent)
+                    print (accuser_match[0] + agent_match[0] + ": ",  agentList)
             if len(defendant_match) != 0:
-                print (defendant_match[0] + ": " + defendant)
+                print (defendant_match[0] + ": ", defendantList)
                 if len(helper_match) != 0:
-                    print (defendant_match[0] + helper_match[0] + ": " + helper)
+                    print (defendant_match[0] + helper_match[0] + ": ", helperList)
             if len(advocate_match) != 0:
-                print (advocate_match[0] + ": " + advocate)
+                print (advocate_match[0] + ": ", advocateList)
