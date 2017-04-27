@@ -50,6 +50,9 @@ for f in parserList:
             advocate_match = ''
             helper_match = ''
             agent_match = ''
+            also_match = ''
+            also_match_two = ''
+            also_accuser_match = ''
 
             # 被告
             if len(defendant_match) > 0:
@@ -60,12 +63,18 @@ for f in parserList:
                     defendant = content[defendantEnd:defendantNameEnd-1]
 
                 # 即其他稱號
-                # also_pat = '即'
-                # also_match = re.findall(also_pat,defendant)
-                # if defendant.find('即'):
-                #     alsoBeg = defendant.find('即\n')
-                #     alsoEnd = alsoBeg+2
-                #     defendant = defendant[alsoEnd:]
+                also_pat = '\n即\n'
+                also_match = re.findall(also_pat,defendant)
+                if len(also_match)!=0:
+                    alsoBeg = defendant.find('\n即\n')
+                    alsoEnd = alsoBeg+3
+                    defendant = defendant[alsoEnd:]
+                also_pat_two = '\n即'
+                also_match_two = re.findall(also_pat_two,defendant)
+                if len(also_match_two)!=0:
+                    alsoBeg_two = defendant.find('\n即')
+                    alsoEnd_two = alsoBeg_two+2
+                    defendant = defendant[alsoEnd_two:]
 
                 # 辯護人
                 advocate_pat = '辯護人'
@@ -76,7 +85,7 @@ for f in parserList:
                     advocateBeg = defendant.find(advocate_match[0])
                     advocateEnd = advocateBeg + len(advocate_match[0])
                     advocate = defendant[advocateEnd:]
-                    defendant = defendant[:advocateBeg]
+                    defendant = defendant[:advocateBeg-1]
                     if len(choose_match) > 0:
                         chooseBeg = defendant.find(choose_match[0])
                         defendant = defendant[:chooseBeg-1]
@@ -92,12 +101,24 @@ for f in parserList:
             if len(accuser_match) > 0:
                 accuserEnd = content.find(accuser_match[0]) + len(accuser_match[0])
                 accuser = content[accuserEnd:defendantBeg]
+
+                also_accuser_pat = '\n即'
+                also_accuser_match = re.findall(also_accuser_pat,accuser)
+                # if len(also_accuser_match)!=0:
+
                 # 原告即被告
                 if accuser == '\n即':
                     accuser = defendant
                 else:
                     accuserEnd = content.find(accuser_match[0]) + len(accuser_match[0])
                     accuser = content[accuserEnd:defendantBeg-1]
+
+                    # 即其他稱號
+                    if len(also_accuser_match)!=0:
+                        alsoAccuBeg = accuser.find('\n即')
+                        alsoAccuEnd = alsoAccuBeg+2
+                        accuser = accuser[alsoAccuEnd:]
+
                     # 原告代理人
                     agent_pat = '代理人'
                     agent_match = re.findall(agent_pat, accuser)
