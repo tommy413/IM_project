@@ -47,13 +47,27 @@ for f in parserList:
             defendant_end_pat = '上列|主文'
             defendant_end_match = re.findall(defendant_end_pat,content)
 
+            advocate_match = ''
+            helper_match = ''
+            agent_match = ''
+
+            # 被告
             if len(defendant_match) > 0:
                 defendantBeg = content.find(defendant_match[0])
                 defendantEnd = defendantBeg + len(defendant_match[0])
                 if len(defendant_end_match) > 0:
                     defendantNameEnd = content.find(defendant_end_match[0])
-                    defendant = content[defendantEnd:defendantNameEnd]
+                    defendant = content[defendantEnd:defendantNameEnd-1]
 
+                # 即其他稱號
+                # also_pat = '即'
+                # also_match = re.findall(also_pat,defendant)
+                # if defendant.find('即'):
+                #     alsoBeg = defendant.find('即\n')
+                #     alsoEnd = alsoBeg+2
+                #     defendant = defendant[alsoEnd:]
+
+                # 辯護人
                 advocate_pat = '辯護人'
                 choose_pat = '指定|選任'
                 advocate_match = re.findall(advocate_pat, defendant)
@@ -65,40 +79,40 @@ for f in parserList:
                     defendant = defendant[:advocateBeg]
                     if len(choose_match) > 0:
                         chooseBeg = defendant.find(choose_match[0])
-                        defendant = defendant[:chooseBeg]
+                        defendant = defendant[:chooseBeg-1]
+                # 輔佐人
                 helper_pat = '輔佐人'
                 helper_match = re.findall(helper_pat, defendant)
                 if len(helper_match) > 0:
                     helperBeg = defendant.find(helper_match[0])
                     helperEnd = helperBeg + len(helper_match[0])
                     helper = defendant[helperEnd:]
-                    defendant = defendant[:helperBeg]
-
+                    defendant = defendant[:helperBeg-1]
+            # 原告
             if len(accuser_match) > 0:
                 accuserEnd = content.find(accuser_match[0]) + len(accuser_match[0])
                 accuser = content[accuserEnd:defendantBeg]
-                if accuser == '即':
+                # 原告即被告
+                if accuser == '\n即':
                     accuser = defendant
-                agent_pat = '代理人'
-                agent_match = re.findall(agent_pat, accuser)
-                if len(agent_match) > 0:
-                    agentBeg = accuser.find(agent_match[0])
-                    agentEnd = agentBeg + len(agent_match[0])
-                    agent = accuser[agentEnd:]
-                    accuser = accuser[:agentBeg]
+                else:
+                    accuserEnd = content.find(accuser_match[0]) + len(accuser_match[0])
+                    accuser = content[accuserEnd:defendantBeg-1]
+                    # 原告代理人
+                    agent_pat = '代理人'
+                    agent_match = re.findall(agent_pat, accuser)
+                    if len(agent_match) > 0:
+                        agentBeg = accuser.find(agent_match[0])
+                        agentEnd = agentBeg + len(agent_match[0])
+                        agent = accuser[agentEnd:]
+                        accuser = accuser[:agentBeg-1]
+
 
             accuserList = accuser.split('\n')
             helperList = helper.split('\n')
             defendantList = defendant.split('\n')
             agentList = agent.split('\n')
             advocateList = advocate.split('\n')
-
-            # print (len(accuserList), accuserList[len(accuserList)-2])
-            accuserList = accuserList.remove('')
-            helperList = helperList.remove('')
-            defendantList = defendantList.remove('')
-            agentList = agentList.remove('')
-            advocateList = advocateList.remove('')
 
             if len(accuser_match) != 0:
                 print (accuser_match[0] + ": ", accuserList)
