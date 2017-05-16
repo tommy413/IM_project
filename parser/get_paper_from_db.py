@@ -9,7 +9,7 @@ import logging
 
 conn = psycopg2.connect(database="law1", user="datac1", password="datac15543", host="ci.lu.im.ntu.edu.tw", port="5432")
 
-def parse(html):
+def parse(paperid,html):
 	info = ""
 	paper = ""
 	try {
@@ -35,21 +35,34 @@ def parse(html):
 							paper = paper + str(td.pre.string).replace('	','').replace(' ','').replace(' ','').replace('\t','').replace('　','')
 							flag = 1
 	}catch (Exception e){
-		logging.ERROR()
+		logging.ERROR(paperid+"_parse_error_"+e)
 	}
 	return paper
 
 def DB_Output(conn,paperid,paper):
-	db = conn.cursor()
-	db.execute("SELECT COUNT(id) from raw_html where id = \'%s\'" % (paperid))
-	count = db.fetchall()[0][0]
-	if count == 0 :
-		query = "INSERT INTO HTMLDATA (ID,CONTENT) VALUES (\'%s\' , \'%s\')" % (paperid,paper)
-	else :
-		query = "UPDATE HTMLDATA SET CONTENT = \'%s\' " % (paper)
-	logging.INFO(query)
-	db.execute(query);
-	conn.commit()
+	try {
+		db = conn.cursor()
+		db.execute("SELECT COUNT(id) from raw_html where id = \'%s\'" % (paperid))
+		count = db.fetchall()[0][0]
+		if count == 0 :
+			query = "INSERT INTO HTMLDATA (ID,CONTENT) VALUES (\'%s\' , \'%s\')" % (paperid,paper)
+			
+		else :
+			query = "UPDATE HTMLDATA SET CONTENT = \'%s\' " % (paper)
+			
+	}catch (Exception e){
+		logging.ERROR(paperid+"_query_error_"+e)
+	}
+	try{
+		db.execute(query)
+		conn.commit()
+		if count == 0:
+			logging.INFO(paperid+" inserted")
+		else :
+			logging.INFO(paperid+" updateed")
+	}catch{Exception e){
+		logging.ERROR(paperid+"_commit_error_"+e)
+	}
 	return
 
 papertype = sys.argv[1]
@@ -72,7 +85,7 @@ for i in range(int((enddate-begindate).days)+1):
 	for html in rows:
 		doc = html[1]
 		paperid = html[0]
-		paper = parse(doc)
+		paper = parse(paperid,doc)
 		DB_Output(conn,paperid,paper)
-	logging.INFO(queryid + "Complete.")
+	logging.INFO(queryid + " Complete.")
 conn.close()
