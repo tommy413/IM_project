@@ -1,0 +1,12 @@
+
+# Milliseconds to wait between requests
+RateLimit = 4000
+
+# number of rows per query
+Batchsize = 1
+
+# log output
+LogFile = "urlcrawler.log"
+
+# DB Login credentials
+Db = "user:pass@host/db"

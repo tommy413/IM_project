@@ -10,30 +10,33 @@ import logging
 conn = psycopg2.connect(database="law1", user="datac1", password="datac15543", host="ci.lu.im.ntu.edu.tw", port="5432")
 
 def parse(html):
-	soup = BeautifulSoup(doc)
-	if 'NoneType' not in str(type(soup.title)):
-		paper = str(soup.title.string)+"\r\n"
 	info = ""
 	paper = ""
-
-	body = soup.body
-	if 'NoneType' not in str(type(soup.body)):
-		tables = body.findAll("table")
-		flag = 0
-		for table in tables:
-			for tr in table.findAll("tr"):
-				for td in tr.findAll("td"):
-					if 'NoneType' not in str(type(td.pre)) and flag == 0:
-						for tr_out in table.findAll("tr"):
-							if 'NoneType' not in str(type(tr_out.td.span)):
-								info = str(tr_out.td.span.string).decode("utf8")
-								info = info.replace("&nbsp;","").replace("None","")
-								if u"筆 / 現在第" not in info:
-									paper = paper + info.encode("utf8")+"\r\n"
-							if "裁判全文" in info.encode("utf8"):
-								break
-						paper = paper + str(td.pre.string).replace('	','').replace(' ','').replace(' ','').replace('\t','').replace('　','')
-						flag = 1
+	try {
+		soup = BeautifulSoup(doc)
+		paper = str(soup.title.string)+"\r\n"
+		
+		body = soup.body
+		if 'NoneType' not in str(type(soup.body)):
+			tables = body.findAll("table")
+			flag = 0
+			for table in tables:
+				for tr in table.findAll("tr"):
+					for td in tr.findAll("td"):
+						if 'NoneType' not in str(type(td.pre)) and flag == 0:
+							for tr_out in table.findAll("tr"):
+								if 'NoneType' not in str(type(tr_out.td.span)):
+									info = str(tr_out.td.span.string).decode("utf8")
+									info = info.replace("&nbsp;","").replace("None","")
+									if u"筆 / 現在第" not in info:
+										paper = paper + info.encode("utf8")+"\r\n"
+								if "裁判全文" in info.encode("utf8"):
+									break
+							paper = paper + str(td.pre.string).replace('	','').replace(' ','').replace(' ','').replace('\t','').replace('　','')
+							flag = 1
+	}catch (Exception e){
+		logging.ERROR()
+	}
 	return paper
 
 def DB_Output(conn,paperid,paper):
@@ -44,6 +47,7 @@ def DB_Output(conn,paperid,paper):
 		query = "INSERT INTO HTMLDATA (ID,CONTENT) VALUES (\'%s\' , \'%s\')" % (paperid,paper)
 	else :
 		query = "UPDATE HTMLDATA SET CONTENT = \'%s\' " % (paper)
+	logging.INFO(query)
 	db.execute(query);
 	conn.commit()
 	return
@@ -51,7 +55,9 @@ def DB_Output(conn,paperid,paper):
 papertype = sys.argv[1]
 begindate = datetime.datetime(int(sys.argv[2][:4]),int(sys.argv[2][4:6]),int(sys.argv[2][6:]))
 enddate = datetime.datetime(int(sys.argv[3][:4]),int(sys.argv[3][4:6]),int(sys.argv[3][6:]))
-logging.basicConfig(filename="%s_%s_%s.log" % (sys.argv[1],sys.argv[2],sys.argv[3]))
+if not os.path.exists("log"):
+		os.makedirs("log")
+logging.basicConfig(filename="log/%s_%s_%s.log" % (sys.argv[1],sys.argv[2],sys.argv[3]), level=logging.INFO )
 db = conn.cursor()
 
 for i in range(int((enddate-begindate).days)+1):
@@ -66,10 +72,7 @@ for i in range(int((enddate-begindate).days)+1):
 	for html in rows:
 		doc = html[1]
 		paperid = html[0]
-		print paperid
 		paper = parse(doc)
 		DB_Output(conn,paperid,paper)
-
+	logging.INFO(queryid + "Complete.")
 conn.close()
-
-		

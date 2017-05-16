@@ -1,7 +1,3 @@
-# Courts and types
-The following is a list of courts and their applicable types
-
-```
 TPC M
 TPU A
 TPJ V
@@ -41,4 +37,3 @@ KMH M V A
 KMD M V A
 LCD M V A
 KSY M
-```

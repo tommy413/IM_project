@@ -1,0 +1,32 @@
+# config for law-project
+
+[general]
+    # number of threads to use in worker pools
+    # min: 1
+    maxThreads = 4
+    # milliseconds to wait between requests in each worker
+    rateLimit = 1000
+    # file to save logs to
+    logFile = "law.log"
+
+[searcher]
+    # file of search ranges or the format: court+type startDate endDate
+    # example: TPDM 20170101 20170102
+    inputFile = "input.txt"
+    # file to store urls of individual cases
+    outputFile = "urls.json"
+
+[crawler]
+    # file of individual urls to crawl / save
+    # should be the same as [searcher] outputFile
+    inputFile = "urls.json"
+    # ["fs", "db"]
+    # output into directories or database
+    outMode = "fs"
+    # directory to save output to
+    # also where it stores failed db inserts
+    # must corespond to outMode
+    outDir = "downloaded"
+    # login string to database
+    login = "user:pass@host:port/db"
+
