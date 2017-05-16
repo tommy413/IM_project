@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from BeautifulSoup import BeautifulSoup
 import sys
+import time
 import os
 import datetime
 from datetime import timedelta
@@ -12,7 +13,7 @@ conn = psycopg2.connect(database="law1", user="datac1", password="datac15543", h
 def parse(paperid,html):
 	info = ""
 	paper = ""
-	try {
+	try:
 		soup = BeautifulSoup(doc)
 		paper = str(soup.title.string)+"\r\n"
 		
@@ -34,43 +35,40 @@ def parse(paperid,html):
 									break
 							paper = paper + str(td.pre.string).replace('	','').replace(' ','').replace(' ','').replace('\t','').replace('　','')
 							flag = 1
-	}catch (Exception e){
-		logging.ERROR(paperid+"_parse_error_"+e)
-	}
+	except Exception as e:
+		logging.error("%s_parse_error_%s\r\n" % (paperid,e) )
+		return "error"
 	return paper
 
 def DB_Output(conn,paperid,paper):
-	try {
-		db = conn.cursor()
-		db.execute("SELECT COUNT(id) from raw_html where id = \'%s\'" % (paperid))
-		count = db.fetchall()[0][0]
-		if count == 0 :
-			query = "INSERT INTO HTMLDATA (ID,CONTENT) VALUES (\'%s\' , \'%s\')" % (paperid,paper)
-			
-		else :
-			query = "UPDATE HTMLDATA SET CONTENT = \'%s\' " % (paper)
-			
-	}catch (Exception e){
-		logging.ERROR(paperid+"_query_error_"+e)
-	}
-	try{
+	
+	db = conn.cursor()
+	db.execute("SELECT COUNT(id) from raw_html where id = \'%s\'" % (paperid))
+	count = int(db.fetchall()[0][0])
+	if count == 0 :
+		query = "INSERT INTO HTMLDATA (ID,CONTENT) VALUES (\'%s\' , \'%s\')" % (paperid,paper)
+	else :
+		query = "UPDATE HTMLDATA SET CONTENT = \'%s\' " % (paper)
+		
+	try:
 		db.execute(query)
 		conn.commit()
+	except Exception as e:
+		logging.error("%s_commit_error_%s\r\n" % (paperid,e))
+		return True
+	else:
 		if count == 0:
-			logging.INFO(paperid+" inserted")
+			logging.info("%s inserted\r\n" % paperid)
 		else :
-			logging.INFO(paperid+" updateed")
-	}catch{Exception e){
-		logging.ERROR(paperid+"_commit_error_"+e)
-	}
-	return
+			logging.info("%s updated\r\n" % paperid)
+		return False
 
 papertype = sys.argv[1]
 begindate = datetime.datetime(int(sys.argv[2][:4]),int(sys.argv[2][4:6]),int(sys.argv[2][6:]))
 enddate = datetime.datetime(int(sys.argv[3][:4]),int(sys.argv[3][4:6]),int(sys.argv[3][6:]))
 if not os.path.exists("log"):
-		os.makedirs("log")
-logging.basicConfig(filename="log/%s_%s_%s.log" % (sys.argv[1],sys.argv[2],sys.argv[3]), level=logging.INFO )
+	os.makedirs("log")
+logging.basicConfig(filename="log/%s_%s_%s.log" % (sys.argv[1],sys.argv[2],sys.argv[3]), level=logging.INFO)
 db = conn.cursor()
 
 for i in range(int((enddate-begindate).days)+1):
@@ -81,11 +79,16 @@ for i in range(int((enddate-begindate).days)+1):
  	# query = "SELECT id,casehtml from raw_html where id = 'TPDM20170301044' "
 	db.execute(query)
 	rows = db.fetchall()
+	error_list = []
 
 	for html in rows:
 		doc = html[1]
 		paperid = html[0]
 		paper = parse(paperid,doc)
-		DB_Output(conn,paperid,paper)
-	logging.INFO(queryid + " Complete.")
+		if paper == "error":
+			continue
+		if DB_Output(conn,paperid,paper) :
+			error_list.append(paperid)
+	logging.info(str(queryid) + " Complete.\r\n")
+	logging.info("Error_List : \r\n%s\r\n" % str(error_list))
 conn.close()
