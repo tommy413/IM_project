@@ -18,6 +18,9 @@ def parse(paperid,html):
 	try:
 		soup = BeautifulSoup(doc)
 		paper = str(soup.title.string)+"\r\n"
+		if "不合法，請洽網管人員" in paper:
+			logging.error("%s_ip_block\r\n")
+			return "block"
 		
 		body = soup.body
 		if 'NoneType' not in str(type(soup.body)):
@@ -43,7 +46,7 @@ def parse(paperid,html):
 	else :
 		if "裁判全文" not in paper:
 			logging.error("%s_data_error : without paper\r\n" % (paperid) )
-			return "error"
+			return "empty"
 		else :
 			return paper
 
@@ -99,20 +102,30 @@ for papertype in papertype_list:
 	 	query = "SELECT id,casehtml from raw_html where id Like \'"+queryid+"%\'"
 		db.execute(query)
 		rows = db.fetchall()
-		error_list = []
+		ip_block = []
+		empty_html = []
+		parser_error = []
 
 		for html in rows:
 			doc = html[1]
 			paperid = html[0]
 			paper = parse(paperid,doc)
 			if paper == "error":
-				error_list.append(paperid)
+				parser_error.append(paperid)
+				continue
+			if paper == "block":
+				ip_block.append(paperid)
+				continue
+			if paper == "empty":
+				empty_html.append(paperid)
 				continue
 			flag = DB_Output(conn,paperid,paper)
 			if flag==True :
 				error_list.append(paperid)
 		logging.info(str(queryid) + " Complete.\r\n")
-		logging.error("Error_List : \r\n%s\r\n" % str(error_list))
+		logging.error("Empty_List : \r\n%s\r\n" % str(empty_html))
+		logging.error("Block_List : \r\n%s\r\n" % str(ip_block))
+		logging.error("Error_List : \r\n%s\r\n" % str(parser_error))
 		logging.getLogger('').removeHandler(logfile_filehandler)
 		logfile_filehandler.close()
 
