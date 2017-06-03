@@ -6,6 +6,7 @@ parserList.remove('get_paper.py')
 parserList.remove('line.py')
 parserList.remove('main.py')
 parserList.remove('reason_judge.py')
+parserList.remove('test_db.py')
 parserList.remove('accu_defe.py')
 parserList.remove('all.py')
 parserList.remove('get_paper_from_db.py')
@@ -29,18 +30,23 @@ for f in parserList:
             content = fread.read()
             print(f)
 
+            #new: claim
             #accuser & defendant
+            claim = ''
             accuser = ''
             defendant = ''
             advocate = ''
             helper = ''
             agent = ''
+            claimList = []
             accuserList = []
             defendantList = []
             advocateList = []
             helperList = []
             agentList = []
-            accuser_pat = '公訴人|聲請人|原告'
+            claim_pat = '聲請人'
+            claim_match = re.findall(claim_pat,content)
+            accuser_pat = '公訴人|原告'
             accuser_match = re.findall(accuser_pat,content)
             defendant_pat = '被告人|受刑人|被告|具保人|上訴人|自訴人'
             defendant_match = re.findall(defendant_pat,content)
@@ -53,6 +59,7 @@ for f in parserList:
             also_match = ''
             also_match_two = ''
             also_accuser_match = ''
+            also_claim_match = ''
 
             # 被告
             if len(defendant_match) > 0:
@@ -104,13 +111,13 @@ for f in parserList:
 
                 also_accuser_pat = '\n即'
                 also_accuser_match = re.findall(also_accuser_pat,accuser)
-                # if len(also_accuser_match)!=0:
 
                 # 原告即被告
                 if accuser == '\n即':
                     accuser = defendant
                 else:
-                    accuserEnd = content.find(accuser_match[0]) + len(accuser_match[0])
+                    accuserBeg = content.find(accuser_match[0])
+                    accuserEnd = accuserBeg + len(accuser_match[0])
                     accuser = content[accuserEnd:defendantBeg-1]
 
                     # 即其他稱號
@@ -127,14 +134,50 @@ for f in parserList:
                         agentEnd = agentBeg + len(agent_match[0])
                         agent = accuser[agentEnd:]
                         accuser = accuser[:agentBeg-1]
+            #聲請人
+            if len(claim_match) > 0:
+                claimBeg = content.find(claim_match[0])
+                claimEnd = claimBeg + len(claim_match[0])
+                claim = content[claimEnd:defendantBeg]
 
+                also_claim_pat = '\n即'
+                also_claim_match = re.findall(also_claim_pat,claim)
 
+                # 原告即被告
+                if claim == '\n即':
+                    claim = defendant
+                else:
+                    # print (claim)
+                    claimBeg = content.find(claim_match[0])
+                    claimEnd = claimBeg + len(claim_match[0])
+                    claim = content[claimEnd:defendantBeg-1]
+
+                    # 即其他稱號
+                    if len(also_claim_match) != 0:
+                        alsoClaimBeg = claim.find('\n即')
+                        alsoClaimEnd = alsoClaimBeg + len(also_claim_match)
+                        claim = claim[alsoClaimEnd:]
+
+                    # 原告代理人
+                    agent_pat = '代理人'
+                    agent_match = re.findall(agent_pat, claim)
+                    if len(agent_match) > 0:
+                        agentBeg = claim.find(agent_match[0])
+                        agentEnd = agentBeg + len(agent_match[0])
+                        agent = claim[agentEnd:]
+                        claim = claim[:agentBeg-1]
+
+            claimList = claim.split('\n')
             accuserList = accuser.split('\n')
             helperList = helper.split('\n')
             defendantList = defendant.split('\n')
             agentList = agent.split('\n')
             advocateList = advocate.split('\n')
 
+            if len(claim_match) != 0:
+                print (claim_match[0] + ": ", claimList)
+                if len(agent_match) != 0:
+                    print (claim_match[0] + agent_match[0] + ": ",  agentList)
             if len(accuser_match) != 0:
                 print (accuser_match[0] + ": ", accuserList)
                 if len(agent_match) != 0:
