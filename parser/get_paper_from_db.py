@@ -19,7 +19,7 @@ def parse(paperid,html):
 		soup = BeautifulSoup(doc)
 		paper = str(soup.title.string)+"\r\n"
 		if "不合法，請洽網管人員" in paper:
-			logging.error("%s_ip_block\r\n")
+			logging.error("%s_ip_block\r\n" % paperid)
 			return "block"
 		
 		body = soup.body
