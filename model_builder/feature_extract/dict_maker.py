@@ -1,33 +1,43 @@
 # coding: utf-8
 import numpy as np
 import psycopg2
-import pandas as pd
 import jieba
 import jieba.analyse
 import jieba.posseg as pseg
 import re
+import math
 jieba.load_userdict("dict.txt.big") 
 
 conn = psycopg2.connect(database="law1", user="datac1", password="datac15543", host="localhost", port="5432")
 print("Opened database successfully")
 
 cur = conn.cursor()
-tokens = set()
+df = {}
+doc_count = 0
 
-for i in range(1,1252):
-	cur.execute("""SELECT sqlid,jfull FROM jdata where sqlid >= %d and sqlid < %d""" % ((i-1)*1000,i*1000))
+for i in range(1,1260):
+	cur.execute("""SELECT sqlid,jfull FROM jdata WHERE sqlid IN (SELECT sqlid FROM jdata_meta WHERE sqlid >= %d and sqlid < %d and cat = 'M') """ % ((i-1)*10000,i*10000))
 	rows = cur.fetchall()
 
 	for row in rows:
-		#tokens = tokens.union(jieba.cut(row[1],cut_all=True))
-		tokens = tokens.union(jieba.cut_for_search(row[1]))
-	print(i,len(tokens))
+		doc_count = doc_count + 1
+		tokens = set()
+		
+		ts = jieba.analyse.extract_tags(row[1], topK=100, withWeight=False, allowPOS=('n','v','a')) 
+		tokens = tokens.union(set(ts))
 
-tokens = sorted(list(tokens))
-f = open("law_dict.txt.1",'w')
-count = 1
-for t in tokens:
-	if re.match("^[\u4e00-\u9fa5]",t):
-		f.write("%d %s\n" % (count,t))
-		count = count + 1
+		rs = jieba.analyse.textrank(row[1], topK=100, withWeight=False, allowPOS=('n','v','a')) 
+		tokens = tokens.union(set(rs))
+
+		for w in tokens:
+			df[w] = df.get(w,0.0) + 1.0
+	print(i,len(df.keys()))
+
+count = 0
+words = sorted(list(df.keys()))
+f = open("law_idf.txt.1",'w')
+for t in words:
+	# if re.match("^[\u4e00-\u9fa5]",t):
+	f.write("%s %f\n" % (t,math.log(float(doc_count)/df[w]) ) )
+	count = count + 1
 print(count)
